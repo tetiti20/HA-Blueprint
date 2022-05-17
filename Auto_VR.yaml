@@ -2,18 +2,18 @@ blueprint:
   name: VR Auto
   description: commande VR automatique
   domain: automation
-    input:
-      VR_cover:
-        name: Motion Sensor
-        description: VR à piloter.
-        selector:
-          entity:
-            domain: cover
-            device_class: cover
-      VR_cover_state:
-      Windows_state:
-      mode_jn:
-      sun_vr:
+   input:
+     VR_cover:
+       name: Motion Sensor
+       description: VR à piloter.
+       selector:
+         entity:
+           domain: cover
+           device_class: cover
+     VR_cover_state:
+     Windows_state:
+     mode_jn:
+     sun_vr:
 
 trigger:
   - platform: state
