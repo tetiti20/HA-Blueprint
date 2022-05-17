@@ -2,15 +2,31 @@ blueprint:
   name: VR Auto
   description: commande VR automatique
   domain: automation
-   input:
-     VR_cover:
-       name: Motion Sensor
-       description: VR à piloter.
-       selector:
-         entity:
-           domain: cover
-           device_class: cover
-     VR_cover_state:
-     Windows_state:
-     mode_jn:
-     sun_vr:
+  input:
+    motion_sensor:
+      name: Motion Sensor
+      description: This sensor will be synchronized with the light.
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class: motion
+    target_light:
+      name: Lights
+      description: The lights to keep in sync.
+      selector:
+        target:
+          entity:
+            domain: light
+
+trigger:
+  - platform: state
+    entity_id: !input motion_sensor
+
+action:
+  - service: >
+      {% if trigger.to_state.state == "on" %}
+        light.turn_on
+      {% else %}
+        light.turn_off
+      {% endif %}
+    target: !input target_light
