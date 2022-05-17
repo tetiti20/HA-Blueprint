@@ -1,0 +1,112 @@
+alias: Auto VR Chambre Parentale
+description: ''
+trigger:
+  - platform: state
+    entity_id:
+      - input_select.mode_jn
+  - platform: state
+    entity_id:
+      - binary_sensor.soleil_vr_chambre_rdc
+      - binary_sensor.fenetre_chambre_parents_contact
+condition:
+  - condition: numeric_state
+    entity_id: cover.flush_shutter
+    attribute: current_position
+    above: '1'
+action:
+  - if:
+      - condition: state
+        entity_id: input_select.mode_jn
+        state: Nuit
+    then:
+      - if:
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id: person.etienne
+                state: home
+              - condition: state
+                entity_id: person.mathilde
+                state: home
+        then:
+          - if:
+              - condition: state
+                entity_id: binary_sensor.fenetre_chambre_parents_contact
+                state: 'off'
+            then:
+              - service: cover.close_cover
+                data: {}
+                target:
+                  device_id: fd5c08843628f881829dba296d9144c1
+            else:
+              - service: cover.open_cover
+                data: {}
+                target:
+                  device_id: fd5c08843628f881829dba296d9144c1
+              - wait_for_trigger: []
+                timeout: '120'
+              - service: cover.close_cover
+                data: {}
+                target:
+                  device_id: fd5c08843628f881829dba296d9144c1
+        else:
+          - service: cover.close_cover
+            data: {}
+            target:
+              device_id:
+                - fd5c08843628f881829dba296d9144c1
+    else:
+      - condition: state
+        entity_id: input_select.mode_jn
+        state: Jour
+      - if:
+          - condition: state
+            entity_id: binary_sensor.fenetre_chambre_parents_contact
+            state: 'on'
+        then:
+          - if:
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: person.etienne
+                    state: home
+                  - condition: state
+                    entity_id: person.mathilde
+                    state: home
+            then:
+              - service: cover.open_cover
+                data: {}
+                target:
+                  device_id: fd5c08843628f881829dba296d9144c1
+            else:
+              - service: cover.close_cover
+                data: {}
+                target:
+                  device_id: fd5c08843628f881829dba296d9144c1
+        else:
+          - if:
+              - condition: state
+                entity_id: input_select.mode_thermostat
+                state: Ete
+            then:
+              - if:
+                  - condition: state
+                    entity_id: binary_sensor.soleil_vr_chambre_rdc
+                    state: 'on'
+                then:
+                  - service: cover.set_cover_position
+                    data:
+                      position: 20
+                    target:
+                      device_id: fd5c08843628f881829dba296d9144c1
+                else:
+                  - service: cover.open_cover
+                    data: {}
+                    target:
+                      device_id: fd5c08843628f881829dba296d9144c1
+            else:
+              - service: cover.open_cover
+                data: {}
+                target:
+                  device_id: fd5c08843628f881829dba296d9144c1
+mode: single
