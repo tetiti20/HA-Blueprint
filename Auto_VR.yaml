@@ -79,6 +79,7 @@ trigger:
       - !input windows_state
     from: "off"
     to: "on"
+condition: []
 action:
   - if:
       - condition: state
@@ -103,25 +104,25 @@ action:
               - service: cover.close_cover
                 data: {}
                 target:
-                  device_id:
-                    - !input vr_cover
+                  entity_id:
+                    - !input vr_cover!input vr_cover
               - wait_for_trigger: []
                 timeout: "120"
               - service: cover.close_cover
                 data: {}
                 target:
-                  device_id:
+                  entity_id:
                     - !input vr_cover
             else:
               - service: cover.open_cover
                 data: {}
                 target:
-                  device_id: !input vr_cover
+                  entity_id: !input vr_cover
         else:
           - service: cover.close_cover
             data: {}
             target:
-              device_id:
+              entity_id:
                 - !input vr_cover
     else:
       - condition: state
@@ -145,13 +146,13 @@ action:
               - service: cover.open_cover
                 data: {}
                 target:
-                  device_id:
+                  entity_id:
                     - !input vr_cover
             else:
               - service: cover.close_cover
                 data: {}
                 target:
-                  device_id: !input vr_cover
+                  entity_id: !input vr_cover
         else:
           - if:
               - condition: state
@@ -167,15 +168,16 @@ action:
                     data:
                       position: !input position_bs
                     target:
-                      device_id: !input vr_cover
+                      entity_id: !input vr_cover
                 else:
                   - service: cover.open_cover
                     data: {}
                     target:
-                      device_id: !input vr_cover
+                      entity_id: !input vr_cover
             else:
               - service: cover.open_cover
                 data: {}
                 target:
-                  device_id: !input vr_cover
+                  entity_id: !input vr_cover
 mode: single
+
