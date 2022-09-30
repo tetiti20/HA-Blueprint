@@ -105,7 +105,7 @@ action:
                 data: {}
                 target:
                   entity_id:
-                    - !input vr_cover!input vr_cover
+                    - !input vr_cover
               - wait_for_trigger: []
                 timeout: "120"
               - service: cover.close_cover
