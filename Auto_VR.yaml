@@ -3,30 +3,179 @@ blueprint:
   description: commande VR automatique
   domain: automation
   input:
-    motion_sensor:
-      name: Motion Sensor
-      description: This sensor will be synchronized with the light.
+    vr_cover:
+      name: VR cover
+      description: VR à piloter.
+      selector:
+        entity:
+          domain: cover
+    vr_cover_state:
+      name: VR cover state
+      description: Position cover.
+      selector:
+        entity:
+          domain: cover
+    windows_state:
+      name: Windows state
+      description: State of windows (open/close).
       selector:
         entity:
           domain: binary_sensor
-          device_class: motion
-    target_light:
-      name: Lights
-      description: The lights to keep in sync.
+          device_class: window
+    mode_jn:
+      name: Mode Jour Nuit
+      description: Mode Jour Nuit.
       selector:
-        target:
-          entity:
-            domain: light
+        entity:
+          domain: input_select
+    sun_vr:
+      name: Sun VR
+      description: Windows is on sun.
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class: light
+    mode_th:
+      name: Mode thermique
+      description: Mode été hiver.
+      selector:
+        entity:
+          domain: input_select
+    position_bs:
+      name: Position brise soleil
+      selector:
+        number:
+          min: 0
+          max: 100
+          mode: slider
+#     presence:
+#      name: presence
+#      description: Dans le cas d'une chambre pour ne pas ouvrir le matin avant le réveil.
+#      selector:
+#        entity:
+#          domain: person
+#          device_class: 
 
 trigger:
   - platform: state
-    entity_id: !input motion_sensor
-
+    entity_id:
+      - !input mode_jn
+    from: Nuit
+    to: Jour
+  - platform: state
+    entity_id:
+      - !input sun_vr
+      - !input windows_state
+    from: "on"
+    to: "off"
+  - platform: state
+    entity_id:
+      - !input mode_jn
+    from: Jour
+    to: Nuit
+  - platform: state
+    entity_id:
+      - !input sun_vr
+      - !input windows_state
+    from: "off"
+    to: "on"
 action:
-  - service: >
-      {% if trigger.to_state.state == "on" %}
-        light.turn_on
-      {% else %}
-        light.turn_off
-      {% endif %}
-    target: !input target_light
+  - if:
+      - condition: state
+        entity_id: !input mode_jn
+        state: Nuit
+    then:
+      - if:
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id: person.etienne
+                state: home
+              - condition: state
+                entity_id: person.mathilde
+                state: home
+        then:
+          - if:
+              - condition: state
+                entity_id: !input windows_state
+                state: "off"
+            then:
+              - service: cover.close_cover
+                data: {}
+                target:
+                  device_id:
+                    - !input vr_cover
+              - wait_for_trigger: []
+                timeout: "120"
+              - service: cover.close_cover
+                data: {}
+                target:
+                  device_id:
+                    - !input vr_cover
+            else:
+              - service: cover.open_cover
+                data: {}
+                target:
+                  device_id: !input vr_cover
+        else:
+          - service: cover.close_cover
+            data: {}
+            target:
+              device_id:
+                - !input vr_cover
+    else:
+      - condition: state
+        entity_id: !input mode_jn
+        state: Jour
+      - if:
+          - condition: state
+            entity_id: !input windows_state
+            state: "on"
+        then:
+          - if:
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: person.etienne
+                    state: home
+                  - condition: state
+                    entity_id: person.mathilde
+                    state: home
+            then:
+              - service: cover.open_cover
+                data: {}
+                target:
+                  device_id:
+                    - !input vr_cover
+            else:
+              - service: cover.close_cover
+                data: {}
+                target:
+                  device_id: !input vr_cover
+        else:
+          - if:
+              - condition: state
+                entity_id: !input mode_th
+                state: Ete
+            then:
+              - if:
+                  - condition: state
+                    entity_id: !input sun_vr
+                    state: "on"
+                then:
+                  - service: cover.set_cover_position
+                    data:
+                      position: !input position_bs
+                    target:
+                      device_id: !input vr_cover
+                else:
+                  - service: cover.open_cover
+                    data: {}
+                    target:
+                      device_id: !input vr_cover
+            else:
+              - service: cover.open_cover
+                data: {}
+                target:
+                  device_id: !input vr_cover
+mode: single
