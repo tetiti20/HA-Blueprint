@@ -9,12 +9,12 @@ blueprint:
       selector:
         entity:
           domain: cover
-    vr_cover_state:
-      name: VR cover state
-      description: Position cover.
-      selector:
-        entity:
-          domain: cover
+#    vr_cover_state:
+#       name: VR cover state
+#      description: Position cover.
+#      selector:
+#        entity:
+#          domain: cover
     windows_state:
       name: Windows state
       description: State of windows (open/close).
