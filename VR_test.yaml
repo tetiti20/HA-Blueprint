@@ -67,7 +67,7 @@ blueprint:
       description: En activant le mode chambre les volet ne s'ouvrent pas en présence des personne à la maison.
       default: false
       selector:
-        boolean:
+        boolean: {}
 trigger:
   - platform: state
     entity_id:
