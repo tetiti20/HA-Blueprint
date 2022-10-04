@@ -1,0 +1,192 @@
+blueprint:
+  name: VR Auto
+  description: commande VR automatique
+  domain: automation
+  input:
+    vr_cover:
+      name: VR cover
+      description: VR à piloter.
+      selector:
+        entity:
+          domain: cover
+    # vr_cover_state:
+    #   name: VR cover state
+    #   description: Position cover.
+    #   selector:
+    #     entity:
+    #       domain: cover
+    windows_state:
+      name: Windows state
+      description: State of windows (open/close).
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class: window
+    mode_jn:
+      name: Mode Jour Nuit
+      description: Mode Jour Nuit.
+      selector:
+        entity:
+          domain: input_select
+    sun_vr:
+      name: Sun VR
+      description: Windows is on sun.
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class: light
+    mode_th:
+      name: Mode thermique
+      description: Mode été hiver.
+      selector:
+        entity:
+          domain: input_select
+    position_bs:
+      name: Position brise soleil
+      selector:
+        number:
+          min: 0
+          max: 100
+          mode: slider
+    person_1:
+      name: presence personne 1
+      description: Dans le cas d'une chambre pour ne pas ouvrir le matin avant le réveil. Ou pour fermé un volet en cas d'absence avec une fenetre ouverte
+      default: 
+      selector:
+        entity:
+          domain: person
+    person_2:
+      name: presence personne 2
+      description: Dans le cas d'une chambre pour ne pas ouvrir le matin avant le réveil. Ou pour fermé un volet en cas d'absence avec une fenetre ouverte
+      default: 
+      selector:
+        entity:
+          domain: person
+    mode_ch:
+      name: Mode chambre
+      description: En activant le mode chambre les volet ne s'ouvrent pas en présence des personne à la maison.
+      boolean:
+trigger:
+  - platform: state
+    entity_id:
+      - !input mode_jn
+    from: Nuit
+    to: Jour
+  - platform: state
+    entity_id:
+      - !input sun_vr
+      - !input windows_state
+    from: "on"
+    to: "off"
+  - platform: state
+    entity_id:
+      - !input mode_jn
+    from: Jour
+    to: Nuit
+  - platform: state
+    entity_id:
+      - !input sun_vr
+      - !input windows_state
+    from: "off"
+    to: "on"
+condition: []
+action:
+  - if:
+      - condition: state
+        entity_id: !input mode_jn
+        state: Nuit
+    then:
+      - if:
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id: person.etienne
+                state: home
+              - condition: state
+                entity_id: person.mathilde
+                state: home
+        then:
+          - if:
+              - condition: state
+                entity_id: !input windows_state
+                state: "off"
+            then:
+              - service: cover.close_cover
+                data: {}
+                target:
+                  entity_id:
+                    - !input vr_cover
+              - wait_for_trigger: []
+                timeout: "120"
+              - service: cover.close_cover
+                data: {}
+                target:
+                  entity_id:
+                    - !input vr_cover
+            else:
+              - service: cover.open_cover
+                data: {}
+                target:
+                  entity_id: !input vr_cover
+        else:
+          - service: cover.close_cover
+            data: {}
+            target:
+              entity_id:
+                - !input vr_cover
+    else:
+      - condition: state
+        entity_id: !input mode_jn
+        state: Jour
+      - if:
+          - condition: state
+            entity_id: !input windows_state
+            state: "on"
+        then:
+          - if:
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: !input person_1
+                    state: home
+                  - condition: state
+                    entity_id: !input person_2
+                    state: home
+            then:
+              - service: cover.open_cover
+                data: {}
+                target:
+                  entity_id:
+                    - !input vr_cover
+            else:
+              - service: cover.close_cover
+                data: {}
+                target:
+                  entity_id: !input vr_cover
+        else:
+          - if:
+              - condition: state
+                entity_id: !input mode_th
+                state: Ete
+            then:
+              - if:
+                  - condition: state
+                    entity_id: !input sun_vr
+                    state: "on"
+                then:
+                  - service: cover.set_cover_position
+                    data:
+                      position: !input position_bs
+                    target:
+                      entity_id: !input vr_cover
+                else:
+                  - service: cover.open_cover
+                    data: {}
+                    target:
+                      entity_id: !input vr_cover
+            else:
+              - service: cover.open_cover
+                data: {}
+                target:
+                  entity_id: !input vr_cover
+mode: single
