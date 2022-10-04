@@ -74,7 +74,7 @@ blueprint:
       description: 
       selector:
 	entity:
-          domain: script
+          domain: automation
       
 trigger:
   - platform: state
