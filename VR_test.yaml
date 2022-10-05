@@ -12,6 +12,7 @@ blueprint:
     windows_state:
       name: Windows state
       description: State of windows (open/close).
+      default: false
       selector:
         entity:
           domain: binary_sensor
@@ -46,14 +47,14 @@ blueprint:
     person_1:
       name: presence personne 1
       description: Dans le cas d'une chambre pour ne pas ouvrir le matin avant le réveil. Ou pour fermé un volet en cas d'absence avec une fenetre ouverte
-      default: 
+      default:  home
       selector:
         entity:
           domain: person
     person_2:
       name: presence personne 2
       description: Dans le cas d'une chambre pour ne pas ouvrir le matin avant le réveil. Ou pour fermé un volet en cas d'absence avec une fenetre ouverte
-      default: 
+      default:  home
       selector:
         entity:
           domain: person
@@ -63,19 +64,6 @@ blueprint:
       default: false
       selector:
         boolean: {}
-    mode_bso:
-      name: Mode brise soleil orientable
-      description: activer pour avoir un action supplémentaire BSO
-      default: false
-      selector:
-        boolean: {}
-    bso_script:
-      name: script pour le pilotage du BSO en position
-      description: choix script bso
-      selector:
-        action:
-#        entity:
-#          domain: automation
 mode: single
 trigger:
   - platform: state
@@ -215,21 +203,8 @@ action:
                   target:
                     entity_id: !input vr_cover
               else:
-                - if:
-                    - condition: and
-                      conditions:
-                        - condition: state
-                          entity_id: !input mode_bso
-                          state: "on"
-                        - condition: numeric_state
-                          entity_id: sensor.sunelevation
-                          below: 45
-                  then:
-                    - service: !input bso_script
-                      data: {}
-                  else:
-                    - service: cover.set_cover_position
-                      data:
-                        position: !input position_bs
-                      target:
-                        entity_id: !input vr_cover
+                - service: cover.set_cover_position
+                  data:
+                    position: !input position_bs
+                  target:
+                    entity_id: !input vr_cover
