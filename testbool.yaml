@@ -1,0 +1,27 @@
+blueprint:
+  name: test bool
+  description: test
+  domain: automation
+  input:
+    mode_ch:
+      name: Mode chambre
+      description: En activant le mode chambre les volet ne s'ouvrent pas en présence des personne à la maison.
+      default: false
+      selector:
+        boolean: {}
+trigger: []
+condition: []
+action:
+  - if:
+      - condition: state
+        entity_id: !input mode_ch
+        state: "on"
+    then:
+      - service: notify.mobile_app_oneplus9pro
+        data:
+          message: c'est ON
+    else:
+      - service: notify.mobile_app_oneplus9pro
+        data:
+          message: c'est off'
+mode: single
