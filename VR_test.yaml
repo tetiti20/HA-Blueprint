@@ -69,7 +69,6 @@ blueprint:
       default: false
       selector:
         boolean: {}
-
 mode: single
 trigger:
   - platform: state
