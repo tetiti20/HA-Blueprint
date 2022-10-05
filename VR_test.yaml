@@ -1,9 +1,7 @@
 blueprint:
-
   name: VR Auto
   description: commande VR automatique
   domain: automation
-mode: single
   input:
     vr_cover:
       name: VR cover
@@ -77,6 +75,7 @@ mode: single
       selector:
         entity:
           domain: automation
+mode: single
 trigger:
   - platform: state
     entity_id:
