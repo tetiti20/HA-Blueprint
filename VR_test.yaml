@@ -69,13 +69,7 @@ blueprint:
       default: false
       selector:
         boolean: {}
-    bso_script:
-      name: script pour le pilotage du BSO en position
-      description: choix script bso
-      selector:
-        action:
-#        entity:
-#          domain: automation
+
 mode: single
 trigger:
   - platform: state
