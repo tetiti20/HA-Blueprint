@@ -73,7 +73,7 @@ blueprint:
       name: script pour le pilotage du BSO en position
       description: 
       selector:
-#        entity:
+        entity:
           domain: automation
 mode: single
 trigger:
@@ -224,7 +224,7 @@ action:
                           entity_id: sensor.sunelevation
                           below: 45
                   then:
-                    - service: script.bso_sud
+                    - service: !input script.bso_sud
                       data: {}
                   else:
                     - service: cover.set_cover_position
