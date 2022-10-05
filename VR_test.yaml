@@ -2,6 +2,7 @@ blueprint:
   name: VR Auto
   description: commande VR automatique
   domain: automation
+  mode: single
   input:
     vr_cover:
       name: VR cover
@@ -73,8 +74,9 @@ blueprint:
       name: script pour le pilotage du BSO en position
       description: 
       selector:
-#        entity:
-        domain: automation
+        domain:
+
+      
 trigger:
   - platform: state
     entity_id:
@@ -179,56 +181,55 @@ action:
                 target:
                   entity_id: !input vr_cover
         else:
-					- if:
-						- condition: and
-							conditions:
-								- condition: state
-									entity_id: !input mode_ch
-									state: true
-								- condition: or
-									conditions:
-										- condition: state
-											entity_id: !input person_1
-											state: home
-										- condition: state
-											entity_id: !input person_2
-											state: home
-								- condition: state
-									entity_id: !input vr_cover
-									state: closed
-						then: []
-						else:
-						- if:
-								- condition: or
-									conditions:
-										- condition: state
-											entity_id: !input mode_th
-											state: Hiver
-										- condition: state
-											entity_id: !input sun_vr
-											state: "off"
-							then:
-								- service: cover.open_cover
-									data: {}
-									target:
-										entity_id: !input vr_cover
-							else:
-								- if:
-										- condition: and
-											conditions:
-												- condition: state
-													entity_id: !input mode_bso
-													state: true
-												- condition: numeric_state
-													entity_id: sensor.sunelevation
-													below: 45
-									then:
-										- service: script.bso_sud
-											data: {}
-									else:
-										- service: cover.set_cover_position
-											data:
-												position: !input position_bs
-											target:
-												entity_id: !input vr_cover
-mode: single
+          - if:
+            - condition: and
+              conditions:
+                - condition: state
+                  entity_id: !input mode_ch
+                  state: true
+                - condition: or
+                  conditions:
+                    - condition: state
+                      entity_id: !input person_1
+                      state: home
+                    - condition: state
+                      entity_id: !input person_2
+                      state: home
+                - condition: state
+                  entity_id: !input vr_cover
+                  state: closed
+            then: []
+            else:
+            - if:
+                - condition: or
+                  conditions:
+                    - condition: state
+                      entity_id: !input mode_th
+                      state: Hiver
+                    - condition: state
+                      entity_id: !input sun_vr
+                      state: "off"
+              then:
+                - service: cover.open_cover
+                  data: {}
+                  target:
+                    entity_id: !input vr_cover
+              else:
+                - if:
+                    - condition: and
+                      conditions:
+                        - condition: state
+                          entity_id: !input mode_bso
+                          state: true
+                        - condition: numeric_state
+                          entity_id: sensor.sunelevation
+                          below: 45
+                  then:
+                    - service: script.bso_sud
+                      data: {}
+                  else:
+                    - service: cover.set_cover_position
+                      data:
+                        position: !input position_bs
+                      target:
+                        entity_id: !input vr_cover
