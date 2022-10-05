@@ -75,7 +75,8 @@ mode: single
       name: script pour le pilotage du BSO en position
       description: 
       selector:
-        domain: automation
+        entity:
+          domain: automation
 trigger:
   - platform: state
     entity_id:
