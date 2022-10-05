@@ -213,7 +213,7 @@ action:
                       conditions:
                         - condition: state
                           entity_id: !input mode_bso
-                          state: true
+                          state: "on"
                         - condition: numeric_state
                           entity_id: sensor.sunelevation
                           below: 45
