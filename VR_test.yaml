@@ -71,7 +71,7 @@ blueprint:
         boolean: {}
     bso_script:
       name: script pour le pilotage du BSO en position
-      description: 
+      description: choix script bso
       selector:
         action:
 #        entity:
