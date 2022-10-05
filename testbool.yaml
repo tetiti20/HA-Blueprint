@@ -9,7 +9,8 @@ blueprint:
       default: false
       selector:
         boolean: {}
-variables: !input mode_ch
+variables:
+  mode_ch: !input mode_ch
 trigger: []
 condition: []
 action:
