@@ -174,7 +174,7 @@ action:
               conditions:
                 - condition: state
                   entity_id: !input mode_ch
-                  state: "on"
+                  state: true
                 - condition: or
                   conditions:
                     - condition: state
@@ -196,7 +196,7 @@ action:
                       state: Hiver
                     - condition: state
                       entity_id: !input sun_vr
-                      state: "off"
+                      state: false
               then:
                 - service: cover.open_cover
                   data: {}
