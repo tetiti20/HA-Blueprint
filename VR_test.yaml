@@ -73,7 +73,7 @@ blueprint:
       name: script pour le pilotage du BSO en position
       description: 
       selector:
-        entity:
+#        entity:
           domain: automation
 mode: single
 trigger:
