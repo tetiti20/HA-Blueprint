@@ -1,8 +1,9 @@
 blueprint:
+
   name: VR Auto
   description: commande VR automatique
   domain: automation
-  mode: single
+mode: single
   input:
     vr_cover:
       name: VR cover
