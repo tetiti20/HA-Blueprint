@@ -65,7 +65,7 @@ blueprint:
         boolean: {}
     mode_bso:
       name: Mode brise soleil orientable
-      description: 
+      description: activer pour avoir un action supplémentaire BSO
       default: false
       selector:
         boolean: {}
